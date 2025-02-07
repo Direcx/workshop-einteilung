@@ -36,6 +36,10 @@ def log_pre_assigned_workshops():
 def log_assigned_workshops():
     for key in persons.keys():
         logging.info(f"person {persons[key].name} is assigned to {persons[key].assigned_workshops}")
+    for key in workshops.keys():
+        logging.info(f"workshop {workshops[key].name} has the following persons assigned")
+        for i in range(len(workshops[key].assigned_persons)):
+            logging.info(f"{workshops[key].name} {i+1} {persons[workshops[key].assigned_persons[i]].name}")
 
 def test_pre_assign():
     group = GroupPersons("tg")
@@ -66,11 +70,12 @@ if __name__ == "__main__":
     #log_workshops()
 
     logging.info("pre-assigning groups to workshops")
-    groups, workshops = ap.pre_assign_groups(groups, workshops, persons)
+    ap.set_variables(groups, workshops, persons)
+    ap.pre_assign_groups()
     #log_pre_assigned_workshops()
 
     logging.info("assigning groups to workshops")
-    groups, workshops, persons = ap.assign_main(groups, workshops, persons)
+    groups, workshops, persons = ap.assign_main()
     log_assigned_workshops()
 
 

@@ -1,4 +1,5 @@
 from typing import List, Dict, Tuple
+import Values as v
 
 
 class Workshop:
@@ -7,7 +8,7 @@ class Workshop:
         self.name = row[1]
         self.weight = int(row[2]) # relevant for timeslot, decides how many timeslots this workshop uses
         self.slots = int(row[3])
-        self.timeslot = int(row[4]) # decides on which timeslot the workshop is held
+        self.timeslot = row[4] # decides on which timeslot the workshop is held
         self.processed = False
         self.assigned_persons: List[str] = []
         self.number_pre_assigned = 0
@@ -22,13 +23,16 @@ class Workshop:
         return self
 
     def assign(self, key_person: str):
-        if len(self.assigned_persons) < self.slots:
+        if len(self.assigned_persons) <= self.slots:
             self.assigned_persons.append(key_person)
             if len(self.assigned_persons) == self.slots:
                 self.processed = True
+        elif v.LOG:
+            print(f"tried to assign Person to workshop {self.name} but {len(self.assigned_persons)} ==? {self.slots}")
 
     def get_pre_assigned_groups(self):
         return self.pre_assigned_groups
 
     def process(self):
         self.processed = True
+        return self

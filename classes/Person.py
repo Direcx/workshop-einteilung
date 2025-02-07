@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 import Values as v
 
 
@@ -18,7 +18,7 @@ class Person:
                 new_pref = {0: row[i * v.SLOTS_PER_PREF + v.COLUMN_OF_FIRST_PREF],
                             1: row[i * v.SLOTS_PER_PREF + v.COLUMN_OF_FIRST_PREF + 1]}
                 self.preferences[i] = new_pref
-        self.assigned_workshops = ["", ""]
+        self.assigned_workshops: Dict[str, str] = {}
 
-    def assign_to_workshop(self, slot: int, workshop_key: str):
+    def assign_to_workshop(self, slot: str, workshop_key: str):
         self.assigned_workshops[slot] = workshop_key
