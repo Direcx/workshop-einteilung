@@ -7,6 +7,9 @@ COLUMN_OF_FIRST_PREF = 4 #info counted
 NR_MAX_PREF = 2
 SLOTS_PER_PREF = 2
 
+LOG = True
+
+
 GROUP_SIZE = 3
 
 WORKSHOP_CAPACITIES = {
@@ -28,13 +31,13 @@ excel_data = """
 """
 
 workshop_data = """
-key name weight slots time
+key name weight slots timeslot
 A	W1	1	2	1
-B	W2	1	3   1
-C	W3	1	3   1
-D	W4	1	3   1
-A2	W12	1	2	1
-B2	W22	1	3   1
-C2	W32	1	3   1
-D2	W42	1	3   1
+B	W2	1	3	1
+C	W3	1	3	1
+D	W4	1	3	1
+A2	W12	1	2	2
+B2	W22	1	3	2
+C2	W32	1	3	2
+D2	W42	1	3	2
 """

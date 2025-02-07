@@ -1,15 +1,12 @@
-from typing import Dict
+from typing import Dict, List
 from classes.Person import Person
 
 
 class GroupPersons:
-    number_persons = 0
-    persons: Dict[str, Person] = {}
-
-
-    def __init__(self):
+    def __init__(self, key):
         self.number_persons = 0
-        self.persons = {}
+        self.persons: Dict[str, Person] = {}
+        self.key = key
 
     def add_person(self, person: Person):
         self.persons[person.key] = person
@@ -27,3 +24,12 @@ class GroupPersons:
             names_string += self.persons[key].name
             names_string += " "
         return names_string
+
+    def assign_persons(self, workshop_key: str, timeslot: int, persons: Dict[str, Person]):
+        if timeslot == 1:
+            for key in self.persons.keys():
+                persons[key].assigned_workshops[timeslot - 1] = workshop_key
+        elif timeslot == 2:
+            for key in self.persons.keys():
+                persons[key].assigned_workshops[timeslot - 3] = workshop_key
+                persons[key].assigned_workshops[timeslot - 2] = workshop_key

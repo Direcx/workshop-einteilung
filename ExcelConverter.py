@@ -6,6 +6,7 @@ from classes.Workshop import Workshop
 # list of persons, imported as Person, and number of persons
 # workshops with capacities and categories
 
+#TODO: check persons data for illegal preferences
 
 #TODO: read persons data from excel file/sheet
 def parse_persons_data(data: str) -> Tuple[Dict[str, Person], int]:

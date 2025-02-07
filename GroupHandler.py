@@ -7,7 +7,7 @@ from classes.GroupPersons import GroupPersons
 # grouped_persons
 
 
-def convert_persons_to_groups(persons: Dict[str, Person]) -> Dict[str, GroupPersons]:
+def convert_persons_to_groups(persons: Dict[str, Person], groups: Dict[str, GroupPersons]) -> Dict[str, GroupPersons]:
     groups: dict[str, GroupPersons] = {}
     for key in persons.keys():
         if persons[key].grouped:
@@ -16,7 +16,7 @@ def convert_persons_to_groups(persons: Dict[str, Person]) -> Dict[str, GroupPers
         if group_size > 1:
             groups, persons = add_group_multi(groups, persons, key)
         else:
-            new_group = GroupPersons()
+            new_group = GroupPersons(len(groups))
             new_group.add_person(persons[key])
             groups[str(len(groups))] = new_group
     return groups
@@ -35,7 +35,7 @@ def check_group_size(persons: Dict[str, Person], key_to_check: str):
 
 
 def add_group_multi(groups, persons: Dict[str, Person], person_key):
-    new_group = GroupPersons()
+    new_group = GroupPersons(len(groups))
     start_key = person_key
     # adding first person of group
     new_group.add_person(persons[start_key])
