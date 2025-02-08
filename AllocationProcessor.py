@@ -87,9 +87,6 @@ def check_space_for_pref_rank(sorted_groups: List[List[str]], prio_rank: int, wo
     persons_in_rank = 0
     for i in range(len(sorted_groups[prio_rank])):
         persons_in_rank += groups[sorted_groups[prio_rank][i]].number_persons
-    if v.LOG:
-        print(f"while checking for space in {workshop.name} there are {persons_in_rank} persons in rank and "
-              f"{workshop.slots - len(workshop.assigned_persons)} available slots found")
     return persons_in_rank <= workshop.slots - len(workshop.assigned_persons)
 
 
@@ -108,8 +105,6 @@ def assign_random_groups(workshop: Workshop, ranked_groups: List[str]):
     slots_available = workshop.slots - len(workshop.assigned_persons)
     groups_sample = ranked_groups
     assigned: List[str] = []
-    if v.LOG:
-        print(f"available slots: {slots_available} with length of list of groups: {len(ranked_groups)}")
     while len(groups_sample) > 0:
         random_group = random.choice(groups_sample)
         if groups[random_group].number_persons <= slots_available:

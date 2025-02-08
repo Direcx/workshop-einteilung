@@ -17,9 +17,7 @@ class Workshop:
     def pre_assign(self, group_key: str, group_size: int, pref_rank: int):
         pref_of_group = pref_rank, group_size
         self.pre_assigned_groups[group_key] = pref_of_group
-        # print(f"assigned {group_key} with {pref_of_group} to {self.key} with pre_assigned: {self.pre_assigned_groups}")
         self.number_pre_assigned += group_size
-        # print(f"added {group_size} to now {self.number_pre_assigned}")
         return self
 
     def assign(self, key_person: str):
@@ -27,8 +25,6 @@ class Workshop:
             self.assigned_persons.append(key_person)
             if len(self.assigned_persons) == self.slots:
                 self.processed = True
-        elif v.LOG:
-            print(f"tried to assign Person to workshop {self.name} but {len(self.assigned_persons)} ==? {self.slots}")
 
     def get_pre_assigned_groups(self):
         return self.pre_assigned_groups

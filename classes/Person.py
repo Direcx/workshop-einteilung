@@ -14,7 +14,6 @@ class Person:
         self.preferences = {} # dictionary with "workshop -> prio of pref"
         for i in range(v.NR_MAX_PREF):
             if i*v.SLOTS_PER_PREF + v.COLUMN_OF_FIRST_PREF < len(row): # check if index exists
-                # print(f"{i} * {v.SLOTS_PER_PREF} + {v.COLUMN_OF_FIRST_PREF} is in row {row[i * v.SLOTS_PER_PREF + v.COLUMN_OF_FIRST_PREF]}")
                 new_pref = {0: row[i * v.SLOTS_PER_PREF + v.COLUMN_OF_FIRST_PREF],
                             1: row[i * v.SLOTS_PER_PREF + v.COLUMN_OF_FIRST_PREF + 1]}
                 self.preferences[i] = new_pref

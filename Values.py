@@ -8,7 +8,7 @@ COLUMN_OF_FIRST_PREF = 4 #info counted
 NR_MAX_PREF = 2
 SLOTS_PER_PREF = 2
 
-LOG = False
+LOG = True
 
 
 GROUP_SIZE = 3
