@@ -22,3 +22,23 @@ class Person:
 
     def assign_to_workshop(self, slot: str, workshop_key: str):
         self.assigned_workshops[slot] = workshop_key
+
+    def is_fully_assigned(self):
+        if v.WORKSHOP_POSSIBLE_TIMESLOTS[0] in self.assigned_workshops:
+            if v.WORKSHOP_POSSIBLE_TIMESLOTS[1] in self.assigned_workshops:
+                return True
+        if v.WORKSHOP_POSSIBLE_TIMESLOTS[2] in self.assigned_workshops:
+            return True
+        return False
+
+    def get_unassigned_slots(self):
+        free_slots = []
+        if not v.WORKSHOP_POSSIBLE_TIMESLOTS[0] in self.assigned_workshops:
+            if not v.WORKSHOP_POSSIBLE_TIMESLOTS[1] in self.assigned_workshops:
+                free_slots.append(v.WORKSHOP_POSSIBLE_TIMESLOTS[2])
+                return free_slots
+            else:
+                free_slots.append(v.WORKSHOP_POSSIBLE_TIMESLOTS[0])
+        if not v.WORKSHOP_POSSIBLE_TIMESLOTS[1] in self.assigned_workshops:
+            free_slots.append(v.WORKSHOP_POSSIBLE_TIMESLOTS[1])
+        return free_slots
