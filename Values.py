@@ -10,15 +10,7 @@ SLOTS_PER_PREF = 2
 
 LOG = True
 
-
 GROUP_SIZE = 3
-
-WORKSHOP_CAPACITIES = {
-    "A" : 3,
-    "B" : 3,
-    "C" : 2,
-    "D" : 3
-}
 
 excel_data = """
     header

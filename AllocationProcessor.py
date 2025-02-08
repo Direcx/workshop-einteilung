@@ -189,6 +189,7 @@ def assign_main():
                                         workshops[least_pre_assigned_workshop].timeslot)
             else:
                 assign_random_groups(workshops[least_pre_assigned_workshop], sorted_pre_assigned_groups[i])
+
     # assign the not fully/at all assigned persons to phantom workshops to be easily sorted out/taken care of afterward
     # TODO: assign the rest to similar workshops as the preferred ones
     not_fully_assigned_persons = get_not_fully_assigned_persons()

@@ -25,11 +25,3 @@ class GroupPersons:
             names_string += " "
         return names_string
 
-    def assign_persons(self, workshop_key: str, timeslot: int, persons: Dict[str, Person]):
-        if timeslot == 1:
-            for key in self.persons.keys():
-                persons[key].assigned_workshops[timeslot - 1] = workshop_key
-        elif timeslot == 2:
-            for key in self.persons.keys():
-                persons[key].assigned_workshops[timeslot - 3] = workshop_key
-                persons[key].assigned_workshops[timeslot - 2] = workshop_key
