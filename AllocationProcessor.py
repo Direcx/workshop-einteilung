@@ -7,17 +7,6 @@ import Values as v
 import GroupHandler as gh
 
 
-#done pre-assign groups to all workshops
-#done get list of all unprocessed workshops
-#done start with workshop with the fewest assigned groups:
-    #done sort pre-assigned groups by preference for workshop
-    #- for each preference
-        #- check if enough slots for groups
-        #- if yes assign, if not randomize the assigning
-    #- cross off the assigned groups from the other pre-assigned workshops
-# repeat process until all workshops with assigned people are processed
-# if groups not assigned create new workshop "not assigned" and assign the groups
-# return all workshops and groups
 groups: Dict[str, GroupPersons] = {}
 workshops: Dict[str, Workshop] = {}
 persons: Dict[str, Person] = {}
@@ -60,13 +49,26 @@ def get_workshop_least_pre_assigned(unprocessed_workshops: List[str]) -> str:
             return key
     return ""
 
-# TODO: make it depending on timeslots
+def get_workshops_with_highest_assign_prio(unprocessed_workshops: List[str]) -> List[str]:
+    global workshops
+    highest_prio_nr = 0
+    highest_prio_timeslot = ""
+    highest_assign_prio_workshops = []
+    for i in range(len(unprocessed_workshops)):
+        if v.WORKSHOP_POSSIBLE_TIMESLOTS[workshops[unprocessed_workshops[i]].timeslot] > highest_prio_nr:
+            highest_prio_nr = v.WORKSHOP_POSSIBLE_TIMESLOTS[workshops[unprocessed_workshops[i]].timeslot]
+            highest_prio_timeslot = workshops[unprocessed_workshops[i]].timeslot
+    for i in range(len(unprocessed_workshops)):
+        if workshops[unprocessed_workshops[i]].timeslot == highest_prio_timeslot:
+            highest_assign_prio_workshops.append(unprocessed_workshops[i])
+    return highest_assign_prio_workshops
+
+
 def get_unprocessed_workshops() -> List[str]:
     global workshops
     unprocessed_workshops = []
     for key in workshops.keys():
         if not workshops[key].processed:
-            #print(f"key added: {key}")
             unprocessed_workshops.append(key)
     return unprocessed_workshops
 
@@ -98,15 +100,23 @@ def assign_single_group(workshop_key: str, group: GroupPersons):
         persons[person].assign_to_workshop(workshops[workshop_key].timeslot, workshop_key)
     return persons, group, workshop_key
 
-#TODO: take care of situation where last slots in workshop could be taken by group and filled to maximum
+
 def assign_random_groups(workshop: Workshop, ranked_groups: List[str]):
     global groups
     global persons
     slots_available = workshop.slots - len(workshop.assigned_persons)
     groups_sample = ranked_groups
     assigned: List[str] = []
-    while len(groups_sample) > 0:
+    while len(groups_sample) > v.MAX_GROUP_SIZE * 2:
         random_group = random.choice(groups_sample)
+        assign_single_group(workshop.key, groups[random_group])
+        assigned.append(random_group)
+        slots_available -= groups[random_group].number_persons
+        cross_off_assigned_group(random_group, workshop.timeslot)
+        groups_sample.remove(random_group)
+    while len(groups_sample) > 0:
+        largest_groups = get_largest_groups(groups_sample)
+        random_group = random.choice(largest_groups)
         if groups[random_group].number_persons <= slots_available:
             assign_single_group(workshop.key, groups[random_group])
             assigned.append(random_group)
@@ -115,7 +125,20 @@ def assign_random_groups(workshop: Workshop, ranked_groups: List[str]):
         else:
             cross_off_from_specific_workshop(random_group, workshop.key)
         groups_sample.remove(random_group)
+
     return assigned
+
+def get_largest_groups(sample_list: List[str]) -> List[str]:
+    global groups
+    groups_largest_size = []
+    largest_group_size = 0
+    for i in range(len(sample_list)):
+        if groups[sample_list[i]].number_persons > largest_group_size:
+            largest_group_size = groups[sample_list[i]].number_persons
+    for i in range(len(sample_list)):
+        if groups[sample_list[i]].number_persons == largest_group_size:
+            groups_largest_size.append(sample_list[i])
+    return groups_largest_size
 
 
 def cross_off_assigned_group(group: str, timeslot: str):
@@ -132,7 +155,7 @@ def cross_off_from_specific_workshop(group:str, workshop:str):
 
 def check_possible_timeslots(key_workshop: str, timeslot: str):
     global workshops
-    if timeslot == v.WORKSHOP_POSSIBLE_TIMESLOTS[2]:
+    if timeslot == v.LAST_WORKSHOP_TIMESLOT:
         return True
     elif workshops[key_workshop].timeslot == timeslot:
        return True
@@ -151,13 +174,12 @@ def get_not_fully_assigned_persons():
 def assign_rest(unassigned_persons: List[str]):
     global persons
     global workshops
-    for timeslot in v.WORKSHOP_POSSIBLE_TIMESLOTS:
+    for timeslot in v.WORKSHOP_POSSIBLE_TIMESLOTS.keys():
         workshops[timeslot] = Workshop([f"{timeslot}", f"No Workshop at timeslot {timeslot}", 1,len(persons), timeslot])
     for i in range(len(unassigned_persons)):
-        list_unassigned_slots = persons[unassigned_persons[i]].get_unassigned_slots()
-        for slot in list_unassigned_slots:
-            persons[unassigned_persons[i]].assign_to_workshop(slot, slot)
-            workshops[slot].assign(unassigned_persons[i])
+        unassigned_slot = persons[unassigned_persons[i]].get_unassigned_slot()
+        persons[unassigned_persons[i]].assign_to_workshop(unassigned_slot, unassigned_slot)
+        workshops[unassigned_slot].assign(unassigned_persons[i])
 
 
 def assign_main():
@@ -171,9 +193,9 @@ def assign_main():
         empty_pre_assigned_groups.append([])
 
     # assign groups/persons to workshops
-    # TODO: make it depending on timeslots of workshops
     while len(get_unprocessed_workshops()) > 0:
-        least_pre_assigned_workshop = get_workshop_least_pre_assigned(get_unprocessed_workshops())
+        highest_assign_prio_workshops = get_workshops_with_highest_assign_prio(get_unprocessed_workshops())
+        least_pre_assigned_workshop = get_workshop_least_pre_assigned(highest_assign_prio_workshops)
         sorted_pre_assigned_groups = get_sorted_pre_assigned_to_workshop(workshops[least_pre_assigned_workshop])
         if sorted_pre_assigned_groups == empty_pre_assigned_groups:
             workshops[least_pre_assigned_workshop] = workshops[least_pre_assigned_workshop].process()

@@ -8,14 +8,14 @@ from classes.GroupPersons import GroupPersons
 # grouped_persons
 # TODO: put persons, groups, workshops in global variables and put setter methode for those
 
-def convert_persons_to_groups(persons: Dict[str, Person], groups: Dict[str, GroupPersons]) -> Dict[str, GroupPersons]:
+def convert_persons_to_groups(persons: Dict[str, Person]) -> Dict[str, GroupPersons]:
     groups: dict[str, GroupPersons] = {}
     for key in persons.keys():
         if persons[key].grouped:
             continue
         group_size = check_group_size(persons, persons[key].key)
         if group_size > 1:
-            groups, persons = add_group_multi(groups, persons, key)
+            groups, persons = add_group_multi_persons(groups, persons, key)
         else:
             new_group = GroupPersons(len(groups))
             new_group.add_person(persons[key])
@@ -26,7 +26,7 @@ def convert_persons_to_groups(persons: Dict[str, Person], groups: Dict[str, Grou
 def check_group_size(persons: Dict[str, Person], key_to_check: str):
     key_start = key_to_check
     key_current = persons[key_start].key_friend
-    for i in range(0, v.GROUP_SIZE):
+    for i in range(0, v.MAX_GROUP_SIZE):
         if key_current == "0":
             return 1
         if key_current == key_start:
@@ -36,9 +36,10 @@ def check_group_size(persons: Dict[str, Person], key_to_check: str):
     return -1
 
 
-def add_group_multi(groups, persons: Dict[str, Person], person_key):
+def add_group_multi_persons(groups, persons: Dict[str, Person], person_key):
     new_group = GroupPersons(len(groups))
     start_key = person_key
+
     # adding first person of group
     new_group.add_person(persons[start_key])
     persons[start_key].grouped = True

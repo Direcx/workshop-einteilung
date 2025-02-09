@@ -4,11 +4,11 @@ import Values as v
 
 class Workshop:
     def __init__(self, row:List[str]):
-        self.key:str = row[0]
-        self.name = row[1]
-        self.weight = int(row[2]) # relevant for timeslot, decides how many timeslots this workshop uses
-        self.slots = int(row[3])
-        self.timeslot = row[4] # decides on which timeslot the workshop is held
+        self.key:str = row[v.COLUMN_WS_KEY]
+        self.name = row[v.COLUMN_WS_NAME]
+        self.information = int(v.COLUMN_WS_INFORMATION) # relevant for timeslot, decides how many timeslots this workshop uses
+        self.slots = int(row[v.COLUMN_WS_SLOTS])
+        self.timeslot = row[v.COLUMN_WS_TIMESLOT] # decides on which timeslot the workshop is held
         self.processed = False
         self.assigned_persons: List[str] = []
         self.number_pre_assigned = 0

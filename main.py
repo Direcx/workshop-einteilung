@@ -63,8 +63,7 @@ if __name__ == "__main__":
     #log_persons()
 
     logging.info("converting persons to groups")
-    groups = {}
-    groups = gh.convert_persons_to_groups(persons, groups)
+    groups = gh.convert_persons_to_groups(persons)
     #log_groups()
 
     logging.info("reading workshop data from excel")
@@ -78,7 +77,7 @@ if __name__ == "__main__":
 
     logging.info("assigning groups to workshops")
     groups, workshops, persons = ap.assign_main()
-    log_assigned_persons()
+    #log_assigned_persons()
     log_assigned_workshops()
 
 

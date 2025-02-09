@@ -4,10 +4,10 @@ import Values as v
 
 class Person:
     def __init__(self, row: List[str]):
-        self.key = row[0]
-        self.name = row[1]
-        self.key_friend = row[2]
-        self.excluded_pref = row[3]
+        self.key = row[v.COLUMN_OF_KEY]
+        self.name = row[v.COLUMN_OF_NAME]
+        self.key_friend = row[v.COLUMN_OF_KEY_FRIEND]
+        self.excluded_pref = [v.COLUMN_OF_EXCLUDE_PRIO]
         # TODO: save other information about person
         self.other: str = ""
         self.grouped = False
@@ -23,21 +23,15 @@ class Person:
         self.assigned_workshops[slot] = workshop_key
 
     def is_fully_assigned(self):
-        if v.WORKSHOP_POSSIBLE_TIMESLOTS[0] in self.assigned_workshops:
-            if v.WORKSHOP_POSSIBLE_TIMESLOTS[1] in self.assigned_workshops:
-                return True
-        if v.WORKSHOP_POSSIBLE_TIMESLOTS[2] in self.assigned_workshops:
+        if v.LAST_WORKSHOP_TIMESLOT in self.assigned_workshops:
+            return True
+        if len(self.assigned_workshops) == len(v.WORKSHOP_POSSIBLE_TIMESLOTS) - 1:
             return True
         return False
 
-    def get_unassigned_slots(self):
-        free_slots = []
-        if not v.WORKSHOP_POSSIBLE_TIMESLOTS[0] in self.assigned_workshops:
-            if not v.WORKSHOP_POSSIBLE_TIMESLOTS[1] in self.assigned_workshops:
-                free_slots.append(v.WORKSHOP_POSSIBLE_TIMESLOTS[2])
-                return free_slots
-            else:
-                free_slots.append(v.WORKSHOP_POSSIBLE_TIMESLOTS[0])
-        if not v.WORKSHOP_POSSIBLE_TIMESLOTS[1] in self.assigned_workshops:
-            free_slots.append(v.WORKSHOP_POSSIBLE_TIMESLOTS[1])
-        return free_slots
+    def get_unassigned_slot(self) -> str:
+        if len(self.assigned_workshops) == 0:
+            return v.LAST_WORKSHOP_TIMESLOT
+        for key in v.WORKSHOP_POSSIBLE_TIMESLOTS.keys():
+            if not key in self.assigned_workshops:
+                return key
