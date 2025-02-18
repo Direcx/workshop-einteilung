@@ -25,9 +25,9 @@ def convert_persons_to_groups(persons: Dict[str, Person]) -> Dict[str, GroupPers
 
 def check_group_size(persons: Dict[str, Person], key_to_check: str):
     key_start = key_to_check
-    key_current = persons[key_start].key_friend
+    key_current: str = persons[key_start].key_friend
     for i in range(0, v.MAX_GROUP_SIZE):
-        if key_current == "0":
+        if not key_current:
             return 1
         if key_current == key_start:
             return i + 1

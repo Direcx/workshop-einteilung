@@ -4,19 +4,19 @@ import Values as v
 
 class Person:
     def __init__(self, row: List[str]):
-        self.key = row[v.COLUMN_OF_KEY]
+        self.key:str = row[v.COLUMN_OF_KEY]
         self.name = row[v.COLUMN_OF_NAME]
-        self.key_friend = row[v.COLUMN_OF_KEY_FRIEND]
+        self.key_friend: str = row[v.COLUMN_OF_KEY_FRIEND]
+        self.information: str = row[v.COLUMN_OF_INFORMATION]
         self.excluded_pref = [v.COLUMN_OF_EXCLUDE_PRIO]
-        # TODO: save other information about person
-        self.other: str = ""
-        self.grouped = False
         self.preferences = {} # dictionary with "workshop -> prio of pref"
         for i in range(v.NR_MAX_PREF):
             if i*v.SLOTS_PER_PREF + v.COLUMN_OF_FIRST_PREF < len(row): # check if index exists
                 new_pref = {0: row[i * v.SLOTS_PER_PREF + v.COLUMN_OF_FIRST_PREF],
                             1: row[i * v.SLOTS_PER_PREF + v.COLUMN_OF_FIRST_PREF + 1]}
                 self.preferences[i] = new_pref
+        # relevant information for allocation process
+        self.grouped = False
         self.assigned_workshops: Dict[str, str] = {}
 
     def assign_to_workshop(self, slot: str, workshop_key: str):

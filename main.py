@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def log_persons():
     # log function to log all persons etc.
-    logging.info(f"it was {number_persons} persons found")
+    logging.info(f"it was {len(persons)} persons found")
     logging.info("the persons are:")
     for key in persons.keys():
         logging.info(f"{key} {persons[key].name}")
@@ -59,7 +59,7 @@ def test_pre_assign():
 
 if __name__ == "__main__":
     logging.info("reading person data from excel")
-    persons, number_persons = ec.parse_persons_data(v.excel_data)
+    persons = ec.import_person_data_form_excel(v.DATA)
     #log_persons()
 
     logging.info("converting persons to groups")
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     #log_groups()
 
     logging.info("reading workshop data from excel")
-    workshops, number_workshops = ec.parse_workshop_data(v.workshop_data)
+    workshops = ec.import_workshop_data_form_excel(v.DATA)
     #log_workshops()
 
     logging.info("pre-assigning groups to workshops")
