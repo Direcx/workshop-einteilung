@@ -48,21 +48,3 @@ def import_workshop_data_form_excel(data: str) -> Dict[str, Workshop]:
 
 #TODO: check persons data for illegal preferences
 
-def parse_workshop_data(data: str) -> Tuple[Dict[str, Workshop], int]:
-    """Parse the input data from Excel."""
-    lines = data.strip().split('\n')
-    lines_of_data = [line.split('\t') for line in lines[1:]] # Skip header
-
-    workshops_count = 0
-    # polish data from lines of strings to usable objects
-    workshops_data: dict[str, Workshop] = {}
-    for row in lines_of_data:
-        if len(row) < 4:
-            continue
-        workshop = Workshop(row)
-        workshops_data[workshop.key] = workshop
-        workshops_count += 1
-
-    return workshops_data, workshops_count
-
-
