@@ -21,10 +21,12 @@ class Workshop:
         return self
 
     def assign(self, key_person: str):
-        if len(self.assigned_persons) <= self.slots:
+        if not self.processed:
             self.assigned_persons.append(key_person)
             if len(self.assigned_persons) == self.slots:
                 self.processed = True
+        else:
+            print("tried to assign but workshop is already full")
 
     def get_pre_assigned_groups(self):
         return self.pre_assigned_groups

@@ -107,7 +107,7 @@ def assign_random_groups(workshop: Workshop, ranked_groups: List[str]):
     slots_available = workshop.slots - len(workshop.assigned_persons)
     groups_sample = ranked_groups
     assigned: List[str] = []
-    while len(groups_sample) > v.MAX_GROUP_SIZE * 2:
+    while slots_available > v.MAX_GROUP_SIZE * 2:
         random_group = random.choice(groups_sample)
         assign_single_group(workshop.key, groups[random_group])
         assigned.append(random_group)
@@ -181,6 +181,14 @@ def assign_rest(unassigned_persons: List[str]):
         persons[unassigned_persons[i]].assign_to_workshop(unassigned_slot, unassigned_slot)
         workshops[unassigned_slot].assign(unassigned_persons[i])
 
+def revisit_assigned_workshops():
+    promotion_possible = True
+    while promotion_possible:
+        promotion_possible = False
+        re_visitable_workshops = []
+        for workshop in workshops.keys():
+            return
+
 
 def assign_main():
     global groups
@@ -217,4 +225,7 @@ def assign_main():
     not_fully_assigned_persons = get_not_fully_assigned_persons()
     if len(not_fully_assigned_persons) > 0:
         assign_rest(not_fully_assigned_persons)
+    # TODO: revisit assigned persons/groups to check for possible better result
+
+
     return groups, workshops, persons

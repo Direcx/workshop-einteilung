@@ -25,6 +25,7 @@ def log_groups():
 def log_workshops():
     for key in workshops.keys():
         logging.info(f"workshop {key} {workshops[key].name} was found")
+        logging.info(f"it has {workshops[key].slots} slots free")
 
 def log_pre_assigned_workshops():
     for key in workshops.keys():
@@ -35,7 +36,7 @@ def log_pre_assigned_workshops():
 
 def log_assigned_workshops():
     for key in workshops.keys():
-        logging.info(f"workshop {workshops[key].name} has the following persons assigned")
+        logging.info(f"workshop {workshops[key].name} has the following {len(workshops[key].assigned_persons)} persons assigned")
         for i in range(len(workshops[key].assigned_persons)):
             logging.info(f"{workshops[key].name} {i+1} {persons[workshops[key].assigned_persons[i]].name}")
 
