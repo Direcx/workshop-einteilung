@@ -31,6 +31,14 @@ class Workshop:
     def get_pre_assigned_groups(self):
         return self.pre_assigned_groups
 
+    def reset_pre_assigned_groups(self):
+        self.pre_assigned_groups = {}
+        self.number_pre_assigned = 0
+        self.processed = False
+
     def process(self):
         self.processed = True
         return self
+
+    def cross_off_person(self, key):
+        self.assigned_persons.remove(key)
