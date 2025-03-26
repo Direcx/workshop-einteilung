@@ -22,6 +22,7 @@ class Person:
         # relevant information for allocation process
         self.grouped = False
         self.assigned_workshops: Dict[str, str] = {}
+        self.assign_probability = 0.0
 
     def assign_to_workshop(self, slot: str, workshop_key: str):
         self.assigned_workshops[slot] = workshop_key
@@ -58,3 +59,9 @@ class Person:
                     elif self.preferences[i][key_assigned] == self.assigned_workshops[key_assigned]:
                         delete = True
                         del self.preferences[i][key_assigned]
+
+    def set_assign_probability(self, probability_factor):
+        self.assign_probability = probability_factor
+
+    def get_assign_probability(self):
+        return self.assign_probability

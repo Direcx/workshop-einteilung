@@ -1,14 +1,14 @@
 from typing import List, Dict, Tuple
-import Values as v
+import Values as Val
 
 
 class Workshop:
     def __init__(self, row:List[str]):
-        self.key:str = row[v.COLUMN_WS_KEY]
-        self.name = row[v.COLUMN_WS_NAME]
-        self.information = int(v.COLUMN_WS_INFORMATION) # relevant for timeslot, decides how many timeslots this workshop uses
-        self.slots = int(row[v.COLUMN_WS_SLOTS])
-        self.timeslot = row[v.COLUMN_WS_TIMESLOT] # decides on which timeslot the workshop is held
+        self.key:str = row[Val.COLUMN_WS_KEY]
+        self.name = row[Val.COLUMN_WS_NAME]
+        self.information = int(Val.COLUMN_WS_INFORMATION) # relevant for timeslot, decides how many timeslots this workshop uses
+        self.slots = int(row[Val.COLUMN_WS_SLOTS])
+        self.timeslot = row[Val.COLUMN_WS_TIMESLOT] # decides on which timeslot the workshop is held
         self.processed = False
         self.assigned_persons: List[str] = []
         self.number_pre_assigned = 0
@@ -42,3 +42,15 @@ class Workshop:
 
     def cross_off_person(self, key):
         self.assigned_persons.remove(key)
+
+    def remove_person(self, person:str):
+        self.assigned_persons.remove(person)
+
+    def get_pre_assigned_groups_list(self):
+        pre_as_list = []
+        for key in self.pre_assigned_groups.keys():
+            pre_as_list.append(key)
+        return pre_as_list
+
+    def get_free_slots(self):
+        return self.slots-(len(self.assigned_persons))

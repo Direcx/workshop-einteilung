@@ -12,7 +12,7 @@ class GroupPersons:
         self.persons[person.key] = person
         self.number_persons += 1
 
-    def get_first_person(self):
+    def get_first_person(self) -> str:
         return list(self.persons)[0]
 
     def get_all_persons(self):

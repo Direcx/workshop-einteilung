@@ -1,8 +1,8 @@
 import logging
-import Values as v
-import ExcelConverter as ec
-import GroupHandler as gh
-import AllocationProcessor as ap
+import Values as Val
+import ExcelConverter as Ec
+import GroupHandler as Gh
+import AllocationProcessor as Ap
 from classes.GroupPersons import GroupPersons
 from classes.Workshop import Workshop
 
@@ -36,52 +36,40 @@ def log_pre_assigned_workshops():
 
 def log_assigned_workshops():
     for key in workshops.keys():
-        logging.info(f"workshop {workshops[key].name} has the following {len(workshops[key].assigned_persons)} persons assigned")
+        logging.info(f"{workshops[key].name} has {len(workshops[key].assigned_persons)} persons assigned:")
         for i in range(len(workshops[key].assigned_persons)):
-            logging.info(f"{workshops[key].name} {i+1} {persons[workshops[key].assigned_persons[i]].name}")
+            logging.info(f"{workshops[key].name} {i+1} {persons[workshops[key].assigned_persons[i]].name}\t with factor {persons[workshops[key].assigned_persons[i]].get_assign_probability()}")
 
 def log_assigned_persons():
     for key in persons.keys():
         logging.info(f"person {persons[key].name} is assigned to {persons[key].assigned_workshops}")
 
-def test_pre_assign():
-    group = GroupPersons("tg")
-    workshop = Workshop(["hi", "test Workshop", 1, 3])
-    logging.info(f"workshop {workshop.name} got {len(workshop.pre_assigned_groups)} groups assigned and"
-                 f" {workshop.number_pre_assigned} persons.")
-    logging.info(f"{workshop.pre_assigned_groups}")
-    workshop = workshop.pre_assign(group.key, 1, 10)
-    logging.info(f"workshop {workshop.name} got {len(workshop.pre_assigned_groups)} groups assigned and"
-                 f" {workshop.number_pre_assigned} persons.")
-    logging.info(f"{workshop.pre_assigned_groups}")
-    workshop2 = Workshop(["nope", "newest Workshop", 1, 3])
-    logging.info(f"{workshop2.pre_assigned_groups}")
-
 
 if __name__ == "__main__":
     logging.info("reading person data from excel")
-    persons = ec.import_person_data_form_excel(v.DATA)
+    persons = Ec.import_person_data_form_excel(Val.DATA)
     #log_persons()
 
     logging.info("converting persons to groups")
-    groups = gh.convert_persons_to_groups(persons)
+    groups = Gh.convert_persons_to_groups(persons)
     #log_groups()
 
     logging.info("reading workshop data from excel")
-    workshops = ec.import_workshop_data_form_excel(v.DATA)
+    workshops = Ec.import_workshop_data_form_excel(Val.DATA)
     #log_workshops()
 
     logging.info("pre-assigning groups to workshops")
-    ap.set_variables(groups, workshops, persons)
-    ap.pre_assign_groups()
+    Ap.set_variables(groups, workshops, persons)
+    Ap.pre_assign_groups()
     #log_pre_assigned_workshops()
 
     logging.info("assigning groups to workshops")
-    groups, workshops, persons = ap.assign_main()
+    #groups, workshops, persons = Ap.assign_main_with_pref_rank()
+    groups, workshops, persons = Ap.assign_main_no_pref_rank()
 
     logging.info("promoting groups to workshops with higher prio")
-    #ap.set_variables(groups, workshops, persons)
-    #groups, workshops, persons = ap.promote_main()
+    Ap.set_variables(groups, workshops, persons)
+    groups, workshops, persons = Ap.promote_main()
     #log_assigned_persons()
     log_assigned_workshops()
 
