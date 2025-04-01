@@ -236,6 +236,18 @@ def remove_from_workshop(group: str,workshop: str):
     for person in groups[group].persons.keys():
         workshops[workshop].remove_person(person)
 
+def evaluate_score():
+    global persons
+    score = 0
+
+    for key in persons.keys():
+        if not persons[key].is_fully_assigned():
+            if persons[key].get_unassigned_slot() == Val.LAST_WORKSHOP_TIMESLOT:
+                score += 2
+            else:
+                score += 1
+    return score
+
 def assign_main_with_pref_rank():
     global groups
     global workshops
@@ -291,7 +303,8 @@ def assign_main_no_pref_rank():
         if not pre_assigned_groups:
             workshops[least_pre_as_workshop] = workshops[least_pre_as_workshop].process()
             continue
-        if workshops[least_pre_as_workshop].get_free_slots() > len(pre_assigned_groups):
+        print(f"{workshops[least_pre_as_workshop].number_pre_assigned} =?=")
+        if workshops[least_pre_as_workshop].get_free_slots() >= workshops[least_pre_as_workshop].number_pre_assigned:
             for i in range(len(pre_assigned_groups)):
                 assign_single_group(least_pre_as_workshop, groups[pre_assigned_groups[i]])
                 cross_off_global_assigned_group(pre_assigned_groups[i], workshops[least_pre_as_workshop].timeslot)
@@ -301,6 +314,7 @@ def assign_main_no_pref_rank():
     # assign the not fully/at all assigned persons to phantom workshops to be easily sorted out/taken care of afterward
     # TODO: assign the rest to similar workshops as the preferred ones
     assign_unassigned_persons()
+    print(evaluate_score())
     return groups, workshops, persons
 
 def promote_main():

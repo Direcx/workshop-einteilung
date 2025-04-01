@@ -26,7 +26,7 @@ class Workshop:
             if len(self.assigned_persons) == self.slots:
                 self.processed = True
         else:
-            print("tried to assign but workshop is already full")
+            print(f"tried to assign to {self.name} but workshop is already full")
 
     def get_pre_assigned_groups(self):
         return self.pre_assigned_groups
