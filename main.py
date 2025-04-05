@@ -1,4 +1,7 @@
 import logging
+import time
+from asyncio import wait_for
+
 import Values as Val
 import ExcelConverter as Ec
 import GroupHandler as Gh
@@ -44,8 +47,16 @@ def log_assigned_persons():
     for key in persons.keys():
         logging.info(f"person {persons[key].name} is assigned to {persons[key].assigned_workshops}")
 
+def log_time(starting_time):
+    logging.info(f"process finished in {(time.time() - starting_time).__round__(3)} seconds")
+
+
+def log_score(iscore):
+    logging.info(f"score of procedure is: {iscore}")
+
 
 if __name__ == "__main__":
+    start_time = time.time()
     logging.info("reading person data from excel")
     persons = Ec.import_person_data_form_excel(Val.DATA)
     #log_persons()
@@ -69,7 +80,12 @@ if __name__ == "__main__":
 
     logging.info("promoting groups to workshops with higher prio")
     Ap.set_variables(groups, workshops, persons)
-    #groups, workshops, persons = Ap.promote_main()
+    groups, workshops, persons, score = Ap.promote_main()
     #log_assigned_persons()
     log_assigned_workshops()
+    log_score(score)
+
+    log_time(start_time)
+
+
 

@@ -86,10 +86,10 @@ def get_workshop_least_pre_assigned(unprocessed_workshops: List[str]) -> str:
         wanted_factor = workshops[unprocessed_workshops[i]].number_pre_assigned/workshops[unprocessed_workshops[i]].slots
         if wanted_factor < lowest_subs:
             lowest_subs = wanted_factor
-    for key in workshops.keys():
-        wanted_factor = workshops[key].number_pre_assigned / workshops[key].slots
-        if wanted_factor == lowest_subs and not workshops[key].processed:
-            return key
+    for i in range(len(unprocessed_workshops)):
+        wanted_factor = workshops[unprocessed_workshops[i]].number_pre_assigned / workshops[unprocessed_workshops[i]].slots
+        if wanted_factor == lowest_subs and not workshops[unprocessed_workshops[i]].processed:
+            return unprocessed_workshops[i]
     return ""
 
 def get_sorted_pre_assigned_to_workshop(workshop: Workshop):
@@ -173,7 +173,6 @@ def search_most_difficult_assigning_groups(group_sample:List[str]):
             most_difficult_assigning_groups.append(group_sample[i])
     return most_difficult_assigning_groups
 
-
 def cross_off_global_assigned_group(group: str, timeslot: str):
     global workshops
     for workshop_key in workshops.keys():
@@ -188,6 +187,28 @@ def cross_off_global_assigned_group(group: str, timeslot: str):
 def cross_off_specific_workshop(group:str, workshop:str):
     global workshops
     del workshops[workshop].pre_assigned_groups[group]
+
+def assign_sorted_groups(least_pre_as_workshop: str, sorted_groups: List[str]):
+    global groups
+    global workshops
+    global persons
+
+    counter = 0
+    while not workshops[least_pre_as_workshop].processed and counter < len(sorted_groups):
+        if workshops[least_pre_as_workshop].get_free_slots() >= groups[sorted_groups[counter]].number_persons:
+            assign_single_group(least_pre_as_workshop, groups[sorted_groups[counter]])
+            cross_off_global_assigned_group(sorted_groups[counter], workshops[least_pre_as_workshop].timeslot)
+        else:
+            cross_off_specific_workshop(sorted_groups[counter], least_pre_as_workshop)
+        counter += 1
+
+def sort_pre_assigned_groups(pre_assigned_groups):
+    global groups
+    global persons
+    list_unsorted = {}
+    for key in pre_assigned_groups:
+        list_unsorted[key] = persons[groups[key].get_first_person()].get_assign_probability()
+    return sorted(list_unsorted, key=list_unsorted.get)
 
 def assign_unassigned_persons():
     global persons
@@ -242,6 +263,7 @@ def evaluate_score():
 
     for key in persons.keys():
         if not persons[key].is_fully_assigned():
+            print("found person not fully assigned")
             if persons[key].get_unassigned_slot() == Val.LAST_WORKSHOP_TIMESLOT:
                 score += 2
             else:
@@ -278,9 +300,6 @@ def assign_main_with_pref_rank():
                                                     workshops[least_pre_assigned_workshop].timeslot)
             else:
                 assign_random_groups(workshops[least_pre_assigned_workshop], sorted_pre_assigned_groups[i])
-    # assign the not fully/at all assigned persons to phantom workshops to be easily sorted out/taken care of afterward
-    # TODO: assign the rest to similar workshops as the preferred ones
-    assign_unassigned_persons()
     return groups, workshops, persons
 
 
@@ -301,20 +320,17 @@ def assign_main_no_pref_rank():
         least_pre_as_workshop = get_workshop_least_pre_assigned(prio_assigning_workshops)
         pre_assigned_groups = workshops[least_pre_as_workshop].get_pre_assigned_groups_list()
         if not pre_assigned_groups:
-            workshops[least_pre_as_workshop] = workshops[least_pre_as_workshop].process()
+            workshops[least_pre_as_workshop].process()
             continue
-        print(f"{workshops[least_pre_as_workshop].number_pre_assigned} =?=")
         if workshops[least_pre_as_workshop].get_free_slots() >= workshops[least_pre_as_workshop].number_pre_assigned:
             for i in range(len(pre_assigned_groups)):
                 assign_single_group(least_pre_as_workshop, groups[pre_assigned_groups[i]])
                 cross_off_global_assigned_group(pre_assigned_groups[i], workshops[least_pre_as_workshop].timeslot)
+            workshops[least_pre_as_workshop].process()
         else:
-            assign_random_groups(workshops[least_pre_as_workshop], pre_assigned_groups)
-
-    # assign the not fully/at all assigned persons to phantom workshops to be easily sorted out/taken care of afterward
-    # TODO: assign the rest to similar workshops as the preferred ones
-    assign_unassigned_persons()
-    print(evaluate_score())
+            sorted_pre = sort_pre_assigned_groups(pre_assigned_groups)
+            assign_sorted_groups(least_pre_as_workshop, sorted_pre)
+            workshops[least_pre_as_workshop].process()
     return groups, workshops, persons
 
 def promote_main():
@@ -330,4 +346,9 @@ def promote_main():
         if not prom_groups == {}:
             continue
 
-    return groups, workshops, persons
+    score = evaluate_score()
+    # assign the not fully/at all assigned persons to phantom workshops to be easily sorted out/taken care of afterward
+    # TODO: assign the rest to similar workshops as the preferred ones
+    assign_unassigned_persons()
+
+    return groups, workshops, persons, score
