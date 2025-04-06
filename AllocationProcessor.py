@@ -6,7 +6,6 @@ import random
 import Values as Val
 import GroupHandler as gh
 
-
 groups: Dict[str, GroupPersons] = {}
 workshops: Dict[str, Workshop] = {}
 persons: Dict[str, Person] = {}
@@ -26,7 +25,7 @@ def pre_assign_groups():
     global groups  # access global variables
     global workshops
     global persons
-    for key in groups.keys(): # iteration through all groups
+    for key in groups.keys():  # iteration through all groups
         preferences_group = gh.get_group_preferences(groups[key], persons)
         for i in range(Val.NR_MAX_PREF):
             # TODO: only assign if not already assigned to workshop
@@ -35,6 +34,7 @@ def pre_assign_groups():
                     workshops[preferences_group[i][pref]].pre_assign(
                         key, groups[key].number_persons, Val.HIGHEST_PREFERENCE_PRIO - i)
     return groups, workshops
+
 
 def set_assign_probability_factor():
     global persons
@@ -53,8 +53,9 @@ def set_assign_probability_factor():
                     workshop_pref = persons[first_person].preferences[i][Val.WORKSHOP_TIMESLOT_NAMES[j]]
                     factor_sum += workshops[workshop_pref].slots / workshops[workshop_pref].number_pre_assigned
         for key in groups[group].persons.keys():
-            probability_factor = factor_sum/(Val.SLOTS_PER_PREF*Val.NR_MAX_PREF)
+            probability_factor = factor_sum / (Val.SLOTS_PER_PREF * Val.NR_MAX_PREF)
             persons[key].set_assign_probability(probability_factor)
+
 
 def get_unprocessed_workshops() -> List[str]:
     global workshops
@@ -63,6 +64,7 @@ def get_unprocessed_workshops() -> List[str]:
         if not workshops[key].processed:
             unprocessed_workshops.append(key)
     return unprocessed_workshops
+
 
 def get_workshops_with_highest_assign_prio(unprocessed_workshops: List[str]) -> List[str]:
     global workshops
@@ -78,19 +80,23 @@ def get_workshops_with_highest_assign_prio(unprocessed_workshops: List[str]) -> 
             highest_assign_prio_workshops.append(unprocessed_workshops[i])
     return highest_assign_prio_workshops
 
+
 def get_workshop_least_pre_assigned(unprocessed_workshops: List[str]) -> str:
     global persons
     global workshops
     lowest_subs = len(persons)
     for i in range(len(unprocessed_workshops)):
-        wanted_factor = workshops[unprocessed_workshops[i]].number_pre_assigned/workshops[unprocessed_workshops[i]].slots
+        wanted_factor = workshops[unprocessed_workshops[i]].number_pre_assigned / workshops[
+            unprocessed_workshops[i]].slots
         if wanted_factor < lowest_subs:
             lowest_subs = wanted_factor
     for i in range(len(unprocessed_workshops)):
-        wanted_factor = workshops[unprocessed_workshops[i]].number_pre_assigned / workshops[unprocessed_workshops[i]].slots
+        wanted_factor = workshops[unprocessed_workshops[i]].number_pre_assigned / workshops[
+            unprocessed_workshops[i]].slots
         if wanted_factor == lowest_subs and not workshops[unprocessed_workshops[i]].processed:
             return unprocessed_workshops[i]
     return ""
+
 
 def get_sorted_pre_assigned_to_workshop(workshop: Workshop):
     sorted_groups: List[List[str]] = []
@@ -102,12 +108,14 @@ def get_sorted_pre_assigned_to_workshop(workshop: Workshop):
                 sorted_groups[i].append(key)
     return sorted_groups
 
+
 def check_space_for_pref_rank(sorted_groups: List[List[str]], prio_rank: int, workshop: Workshop):
     global groups
     persons_in_rank = 0
     for i in range(len(sorted_groups[prio_rank])):
         persons_in_rank += groups[sorted_groups[prio_rank][i]].number_persons
     return persons_in_rank <= workshop.slots - len(workshop.assigned_persons)
+
 
 def assign_single_group(workshop_key: str, group: GroupPersons):
     global persons
@@ -116,6 +124,7 @@ def assign_single_group(workshop_key: str, group: GroupPersons):
         workshops[workshop_key].assign(person)
         persons[person].assign_to_workshop(workshops[workshop_key].timeslot, workshop_key)
     return persons, group, workshop_key
+
 
 def assign_random_groups(workshop: Workshop, ranked_groups: List[str]):
     global groups
@@ -146,6 +155,7 @@ def assign_random_groups(workshop: Workshop, ranked_groups: List[str]):
         groups_sample.remove(random_group)
     return assigned
 
+
 def get_largest_groups(sample_list: List[str]) -> List[str]:
     global groups
     groups_largest_size = []
@@ -158,10 +168,11 @@ def get_largest_groups(sample_list: List[str]) -> List[str]:
             groups_largest_size.append(sample_list[i])
     return groups_largest_size
 
-def search_most_difficult_assigning_groups(group_sample:List[str]):
+
+def search_most_difficult_assigning_groups(group_sample: List[str]):
     global groups
     global persons
-    most_difficult_assigning_groups:List[str] = []
+    most_difficult_assigning_groups: List[str] = []
     lowest_prob = persons[groups[group_sample[0]].get_first_person()].get_assign_probability()
     for i in range(len(group_sample)):
         prob = persons[groups[group_sample[0]].get_first_person()].get_assign_probability()
@@ -172,6 +183,7 @@ def search_most_difficult_assigning_groups(group_sample:List[str]):
         if prob == lowest_prob:
             most_difficult_assigning_groups.append(group_sample[i])
     return most_difficult_assigning_groups
+
 
 def cross_off_global_assigned_group(group: str, timeslot: str):
     global workshops
@@ -184,9 +196,11 @@ def cross_off_global_assigned_group(group: str, timeslot: str):
         if group in workshops[workshop_key].pre_assigned_groups and possible_timeslot:
             del workshops[workshop_key].pre_assigned_groups[group]
 
-def cross_off_specific_workshop(group:str, workshop:str):
+
+def cross_off_specific_workshop(group: str, workshop: str):
     global workshops
     del workshops[workshop].pre_assigned_groups[group]
+
 
 def assign_sorted_groups(least_pre_as_workshop: str, sorted_groups: List[str]):
     global groups
@@ -202,13 +216,26 @@ def assign_sorted_groups(least_pre_as_workshop: str, sorted_groups: List[str]):
             cross_off_specific_workshop(sorted_groups[counter], least_pre_as_workshop)
         counter += 1
 
-def sort_pre_assigned_groups(pre_assigned_groups):
+
+def sort_pre_assigned_groups(pre_assigned_groups: List):
     global groups
     global persons
-    list_unsorted = {}
+    unsorted_dict = {}
+    value_dict = {}
     for key in pre_assigned_groups:
-        list_unsorted[key] = persons[groups[key].get_first_person()].get_assign_probability()
-    return sorted(list_unsorted, key=list_unsorted.get)
+        unsorted_dict[key] = persons[groups[key].get_first_person()].get_assign_probability()
+    for value in unsorted_dict.values():
+        value_dict[value] = []
+    for key in unsorted_dict.keys():
+        value_dict[unsorted_dict[key]].append(key)
+    sorted_values = sorted(value_dict.keys())
+    sorted_list = []
+    for value in sorted_values:
+        keys = value_dict[value]
+        random.shuffle(keys)
+        sorted_list.extend(keys)
+    return sorted_list
+
 
 def assign_unassigned_persons():
     global persons
@@ -219,11 +246,13 @@ def assign_unassigned_persons():
             not_fully_assigned_persons.append(person_key)
     if not not_fully_assigned_persons == [None]:
         for timeslot in Val.WORKSHOP_POSSIBLE_TIMESLOTS.keys():
-            workshops[timeslot] = Workshop([f"{timeslot}", f"___________{timeslot} No Workshop", 1, len(persons), timeslot])
+            workshops[timeslot] = Workshop(
+                [f"{timeslot}", f"___________{timeslot} No Workshop", 1, len(persons), timeslot])
         for i in range(len(not_fully_assigned_persons)):
             unassigned_slot = persons[not_fully_assigned_persons[i]].get_unassigned_slot()
             persons[not_fully_assigned_persons[i]].assign_to_workshop(unassigned_slot, unassigned_slot)
             workshops[unassigned_slot].assign(not_fully_assigned_persons[i])
+
 
 def get_promotable_groups():
     global groups
@@ -231,9 +260,10 @@ def get_promotable_groups():
 
     promotable_groups = {}
     for group in groups.keys():
-        if persons[groups[group].get_first_person()].get_if_promotable():# check if theoretically promotable:
+        if persons[groups[group].get_first_person()].get_if_promotable():  # check if theoretically promotable:
             promotable_groups[group] = groups[group]
     return promotable_groups
+
 
 def set_for_promotion():
     global groups
@@ -245,17 +275,19 @@ def set_for_promotion():
         if persons[groups[group].get_first_person()].get_if_promotable():  # check if theoretically promotable:
             promotable_groups[group] = groups[group]
 
-    for key in promotable_groups.keys(): # deleting all unnecessary wishes
+    for key in promotable_groups.keys():  # deleting all unnecessary wishes
         persons[groups[key].get_first_person()].cut_unused_wishes()
     return promotable_groups
 
-def remove_from_workshop(group: str,workshop: str):
+
+def remove_from_workshop(group: str, workshop: str):
     global groups
     global persons
     global workshops
 
     for person in groups[group].persons.keys():
         workshops[workshop].remove_person(person)
+
 
 def evaluate_score():
     global persons
@@ -269,6 +301,7 @@ def evaluate_score():
             else:
                 score += 1
     return score
+
 
 def assign_main_with_pref_rank():
     global groups
@@ -332,6 +365,7 @@ def assign_main_no_pref_rank():
             assign_sorted_groups(least_pre_as_workshop, sorted_pre)
             workshops[least_pre_as_workshop].process()
     return groups, workshops, persons
+
 
 def promote_main():
     global groups

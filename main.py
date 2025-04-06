@@ -81,8 +81,8 @@ if __name__ == "__main__":
     logging.info("promoting groups to workshops with higher prio")
     Ap.set_variables(groups, workshops, persons)
     groups, workshops, persons, score = Ap.promote_main()
-    #log_assigned_persons()
-    log_assigned_workshops()
+    log_assigned_persons()
+    #log_assigned_workshops()
     log_score(score)
 
     log_time(start_time)
